@@ -66,17 +66,6 @@
         let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
         let nextId = expenses.length ? Math.max(...expenses.map(expense => expense.id)) + 1 : 1;
 
-        function addExpense(category, amount, date) {
-            const id = nextId++;
-            expenses.push({ id, category, amount, date });
-            localStorage.setItem('expenses', JSON.stringify(expenses));
-            renderExpense(id, category, amount, date);
-        }
-
-        function renderExpense(id, category, amount, date) {
-            list.innerHTML += `<tr><td>${category}</td><td>$${amount}</td><td>${date}</td><td><button onclick="editExpense(${id})">Edit</button><button onclick="deleteExpense(${id})">Delete</button></td></tr>`;
-        }
-
         function editExpense(id) {
             const expense = expenses.find(expense => expense.id === id);
             categorySelect.value = expense.category;
@@ -90,6 +79,17 @@
             localStorage.setItem('expenses', JSON.stringify(expenses));
             list.innerHTML = '';
             expenses.forEach(expense => renderExpense(expense.id, expense.category, expense.amount, expense.date));
+        }
+
+        function addExpense(category, amount, date) {
+            const id = nextId++;
+            expenses.push({ id, category, amount, date });
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+            renderExpense(id, category, amount, date);
+        }
+
+        function renderExpense(id, category, amount, date) {
+            list.innerHTML += `<tr><td>${category}</td><td>$${amount}</td><td>${date}</td><td><button onclick="editExpense(${id})">Edit</button><button onclick="deleteExpense(${id})">Delete</button></td></tr>`;
         }
 
         function deleteAllExpenses() {
