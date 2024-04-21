@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #expense-form {
+            margin-bottom: 1em;
+        }
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5em;
+        }
+        .expense-item button {
+            margin-left: 1em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Expense Tracker</h1>
+    <form id="expense-form">
+        <select id="expense-category" required>
+            <option value="">Select Category</option>
+            <option value="Food">Food</option>
+            <option value="Transport">Transport</option>
+            <option value="Entertainment">Entertainment</option>
+            <!-- Add more categories as needed -->
+        </select>
+        <input type="number" id="expense-amount" placeholder="Amount" required>
+        <input type="date" id="expense-date" required>
+        <button type="submit">Add Expense</button>
+    </form>
+    <button id="delete-all">Delete All Expenses</button>
+    <table id="expense-table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="expense-list"></tbody>
+    </table>
+
+    <script>
+        const form = document.getElementById('expense-form');
+        const deleteAllButton = document.getElementById('delete-all');
+        const categorySelect = document.getElementById('expense-category');
+        const amountInput = document.getElementById('expense-amount');
+        const dateInput = document.getElementById('expense-date');
+        const list = document.getElementById('expense-list');
+
+        let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+        let nextId = expenses.length ? Math.max(...expenses.map(expense => expense.id)) + 1 : 1;
+
+        function addExpense(category, amount, date) {
+            const id = nextId++;
+            expenses.push({ id, category, amount, date });
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+            renderExpense(id, category, amount, date);
+        }
+
+        function renderExpense(id, category, amount, date) {
+            list.innerHTML += `<tr><td>${category}</td><td>$${amount}</td><td>${date}</td><td><button onclick="editExpense(${id})">Edit</button><button onclick="deleteExpense(${id})">Delete</button></td></tr>`;
+        }
+
+        function editExpense(id) {
+            const expense = expenses.find(expense => expense.id === id);
+            categorySelect.value = expense.category;
+            amountInput.value = expense.amount;
+            dateInput.value = expense.date;
+            deleteExpense(id);
+        }
+
+        function deleteExpense(id) {
+            expenses = expenses.filter(expense => expense.id !== id);
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+            list.innerHTML = '';
+            expenses.forEach(expense => renderExpense(expense.id, expense.category, expense.amount, expense.date));
+        }
+
+        function deleteAllExpenses() {
+            expenses = [];
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+            list.innerHTML = '';
+        }
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            addExpense(categorySelect.value, amountInput.value, dateInput.value);
+            categorySelect.value = '';
+            amountInput.value = '';
+            dateInput.value = '';
+        });
+
+        deleteAllButton.addEventListener('click', deleteAllExpenses);
+
+        expenses.forEach(expense => renderExpense(expense.id, expense.category, expense.amount, expense.date));
+    </script>
+</body>
+</html>
