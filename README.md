@@ -19,5 +19,3 @@ This project is a simple Expense Tracker web application. It allows users to tra
 ## Contributing
 If you would like to contribute to this project, please open an issue or submit a pull request with your changes.
 
-## License
-This project is licensed under the MIT License.
